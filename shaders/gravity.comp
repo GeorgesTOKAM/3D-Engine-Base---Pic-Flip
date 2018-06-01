@@ -1,0 +1,71 @@
+#version 430
+
+layout (local_size_x = 4) in;
+
+struct Particle
+{
+    vec4 position;
+    vec4 velocity;
+};
+
+layout(binding = 1) buffer particlesBlock
+{
+    Particle particles[];
+};
+
+void main()
+{
+    uint index = gl_GlobalInvocationID.x;
+    vec3 v = particles[index].velocity.xyz;
+    vec3 p = particles[index].position.xyz;
+    
+    v += (1.0/60.0) * vec3(0, -9.81, 0);
+    p += (1.0/60.0) * v;
+
+   
+
+
+    /* Limits X axis*/
+    if(p.x>13){
+        p.x=13;
+        v.x=-0.9*v.x;
+    }
+
+    if(p.x<-13){
+        p.x=-13;
+        v.x=-0.9*v.x;
+    }
+
+     /*Limit Y axis*/
+    if(p.y < 0) {
+        p.y=0;
+        v.y=-0.9*v.y;
+    }
+    if(p.y>25){
+        p.y=25;
+        v.y=-0.9*v.y;
+    }
+
+
+    /* Limits z axis*/
+    if(p.z>25){
+        p.z=25;
+        v.z=-0.9*v.z;
+    }
+
+    if(p.z<0){
+        p.z=0;
+        v.z=-0.9*v.z;
+    }
+
+
+
+   
+
+
+
+
+
+    particles[index].velocity = vec4(v, 1.0);
+    particles[index].position = vec4(p, 1.0);
+}
